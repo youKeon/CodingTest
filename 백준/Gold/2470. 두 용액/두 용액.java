@@ -4,7 +4,6 @@ import java.io.*;
 class Main {
     public static void main(String[] args) throws IOException {
         BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
-        BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(System.out));
         int n = Integer.parseInt(br.readLine());
         int[] arr = new int[n];
 
@@ -31,8 +30,6 @@ class Main {
             if (total > 0) ri--;
             else li++;
         }
-        bw.write(String.valueOf(ansArr[0]) + " " + String.valueOf(ansArr[1]));
-        bw.close();
-        br.close();
+        system.out.print(ansArr[0] + " " + ansArr[1]);
     }
 }
