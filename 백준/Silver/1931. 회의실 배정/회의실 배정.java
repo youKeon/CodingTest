@@ -1,35 +1,34 @@
 import java.util.*;
 import java.io.*;
 
-public class Main {
+class Main {
 
     public static void main(String[] args) throws IOException{
         BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
-        BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(System.out));
+        StringTokenizer st = null;
         int n = Integer.parseInt(br.readLine());
         int ans = 0;
-        int end = Integer.MIN_VALUE;
         int[][] arr = new int[n][2];
+
         for (int i = 0; i < n; i++) {
-            StringTokenizer st = new StringTokenizer(br.readLine());
+            st = new StringTokenizer(br.readLine());
             arr[i][0] = Integer.parseInt(st.nextToken());
             arr[i][1] = Integer.parseInt(st.nextToken());
-            end = Math.max(arr[i][1], end);
         }
 
-        Arrays.sort(arr, (arr1, arr2) -> {
-            if (arr1[1] == arr2[1]) return arr1[0] - arr2[0];
-            return arr1[1] - arr2[1];
+        Arrays.sort(arr, (o1, o2) -> {
+            if (o1[1] == o2[1]) return o1[0] - o2[0];
+            return o1[1] - o2[1];
         });
-        int cur = 0;
-        for (int i = 0; i < n; i++) {
-            if (arr[i][0] >= cur) {
-                cur = arr[i][1];
+
+        int preEndTime = 0;
+        for (int[] ints : arr) {
+            int curStartTime = ints[0];
+            if (preEndTime <= curStartTime) {
+                preEndTime = ints[1];
                 ans++;
             }
         }
-        bw.write(String.valueOf(ans));
-        bw.close();
-        br.close();
+        System.out.print(ans);
     }
 }
