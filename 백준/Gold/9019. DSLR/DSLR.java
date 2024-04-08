@@ -5,8 +5,9 @@ class Main {
     static String[] arr;
     static boolean[] isVisited;
 
-    public static void main(String[] args) throws IOException {
+    public static void main(String[] args) throws IOException{
         BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+        BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(System.out));
         StringTokenizer st = null;
 
         int tc = Integer.parseInt(br.readLine());
@@ -15,61 +16,54 @@ class Main {
             int from = Integer.parseInt(st.nextToken());
             int to = Integer.parseInt(st.nextToken());
 
-            isVisited = new boolean[10000];
-            arr = new String[10000];
-            Arrays.fill(arr,  "");
+            arr = new String[10000 + 3];
+            isVisited = new boolean[10000 + 3];
+            Arrays.fill(arr, "");
 
             bfs(from, to);
 
-            System.out.println(arr[to]);
+            bw.write(arr[to]);
+            bw.newLine();
         }
+        bw.close();
+        br.close();
     }
 
     private static void bfs(int from, int to) {
         Queue<Integer> q = new LinkedList<>();
-        q.add(from);
         isVisited[from] = true;
+        q.add(from);
 
         while (!q.isEmpty() && !isVisited[to]) {
-            int cur = q.poll();
-
-            int D = (2 * cur) % 10000;
+            Integer cur = q.poll();
+            int D = cur * 2 > 9999 ? (cur * 2) % 10000 : cur * 2;
             int S = cur == 0 ? 9999 : cur - 1;
-            int L = (cur % 1000) * 10 + cur / 1000;
-            int R = (cur % 10) * 1000 + cur / 10;
+            int L = (cur % 1000) * 10 + (cur / 1000);
+            int R = (cur % 10) * 1000 + (cur / 10);
 
             if (!isVisited[D]) {
-                q.add(D);
                 isVisited[D] = true;
                 arr[D] = arr[cur] + "D";
+                q.add(D);
             }
 
             if (!isVisited[S]) {
-                q.add(S);
                 isVisited[S] = true;
                 arr[S] = arr[cur] + "S";
+                q.add(S);
             }
 
             if (!isVisited[L]) {
-                q.add(L);
                 isVisited[L] = true;
                 arr[L] = arr[cur] + "L";
+                q.add(L);
             }
 
             if (!isVisited[R]) {
-                q.add(R);
                 isVisited[R] = true;
                 arr[R] = arr[cur] + "R";
+                q.add(R);
             }
         }
     }
 }
-
-/**
- * D, S, L, R 명령어가 있는 계산기
- * 계산기에 있는 레지스터리는 0 이상 10000 미만의 십진수 저장
- * D : n * 2, 결과 값이 9999보다 크면 10000으로 나눈 나머지를 저장
- * S : n - 1, 결과 값이 0이면 9999 저장
- * L :
- *
- */
