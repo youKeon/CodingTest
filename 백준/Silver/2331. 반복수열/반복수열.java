@@ -2,33 +2,37 @@ import java.util.*;
 import java.io.*;
 
 class Main {
-
     public static void main(String[] args) throws IOException{
         BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
-        List<Integer> list = new ArrayList<>();
         StringTokenizer st = new StringTokenizer(br.readLine());
 
-        int n = Integer.parseInt(st.nextToken());
-        int p = Integer.parseInt(st.nextToken());
+        ArrayList<Integer> list = new ArrayList<>();
+        int A = Integer.parseInt(st.nextToken());
+        int P = Integer.parseInt(st.nextToken());
         int ans = 0;
+        list.add(A);
 
-        list.add(n);
         while (true) {
             Integer cur = list.get(list.size() - 1);
+            int tmp = operation(cur, P);
 
-            int sum = 0;
-            while (cur != 0) {
-                sum += Math.pow(cur % 10, p);
-                cur /= 10;
-            }
-
-            if (list.contains(sum)) {
-                ans = list.indexOf(sum);
+            if (list.contains(tmp)) {
+                ans = list.indexOf(tmp);
                 break;
             }
-            list.add(sum);
+
+            list.add(tmp);
         }
-        
         System.out.print(ans);
+    }
+
+    private static int operation(Integer cur, int p) {
+        int result = 0;
+        while (cur != 0) {
+            int tmp = cur % 10;
+            result += Math.pow(tmp, p);
+            cur /= 10;
+        }
+        return result;
     }
 }
