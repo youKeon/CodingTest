@@ -2,60 +2,72 @@ import java.util.*;
 import java.io.*;
 
 class Main {
-    static String target = "123456780";
-    static String statement;
-    static Map<String, Integer> map;
-    static int[] dr = {-1, 1, 0, 0};
-    static int[] dc = {0, 0, -1, 1};
+    static final String ANS = "123456780";
+    static Map<String, Integer> hashMap = new HashMap();
+    static int[][] map;
+    static int[] dy = {-1, 1, 0, 0};
+    static int[] dx = {0, 0, -1, 1};
 
     public static void main(String[] args) throws IOException{
         BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
         StringTokenizer st = null;
 
-        statement = "";
-        map = new HashMap<>();
-
+        map = new int[9][9];
+        String init = "";
         for (int i = 0; i < 3; i++) {
             st = new StringTokenizer(br.readLine());
             for (int j = 0; j < 3; j++) {
-                statement += st.nextToken();
+                map[i][j] = Integer.parseInt(st.nextToken());
+                init += map[i][j];
             }
         }
-        map.put(statement, 0);
-        int ans = bfs(statement);
-        System.out.print(ans);
+
+        int count = bfs(init);
+        System.out.print(count);
     }
 
-    private static int bfs(String start) {
+    private static int bfs(String init) {
         Queue<String> q = new LinkedList<>();
-        q.add(start);
+        q.add(init);
+        hashMap.put(init, 0);
 
         while (!q.isEmpty()) {
-            String cur = q.poll().toString();
-            if (cur.equals(target)) return map.get(cur);
+            String cur = q.poll();
+            if (cur.equals(ANS)) {
+                return hashMap.get(cur);
+            }
 
             int zeroIdx = cur.indexOf("0");
-            int row = zeroIdx / 3;
-            int col = zeroIdx % 3;
+            int y = zeroIdx / 3;
+            int x = zeroIdx % 3;
 
             for (int i = 0; i < 4; i++) {
-                int nextRow = row + dr[i];
-                int nextCol = col + dc[i];
+                int ny = y + dy[i];
+                int nx = x + dx[i];
 
-                if (nextRow >= 0 && nextRow < 3 && nextCol >= 0 && nextCol < 3) {
-                    int nextZeroIdx = nextRow * 3 + nextCol;
-                    char nextIdxCharacter = cur.charAt(nextZeroIdx);
-                    String nextString = cur.replace(nextIdxCharacter, 'n');
-                    nextString = nextString.replace('0', nextIdxCharacter);
-                    nextString = nextString.replace('n', '0');
+                if (isValidZone(ny, nx)) {
+                    int nextIdx = (ny * 3) + nx;
+                    String nextString = swap(cur, nextIdx);
 
-                    if (!map.containsKey(nextString)) {
+                    if (!hashMap.containsKey(nextString)) {
+                        hashMap.put(nextString, hashMap.get(cur) + 1);
                         q.add(nextString);
-                        map.put(nextString, map.get(cur) + 1);
                     }
                 }
             }
         }
         return -1;
+    }
+
+    private static String swap(String cur, int nextIdx) {
+        char target = cur.charAt(nextIdx);
+        String nextString = cur.replace(target, '-');
+        nextString = nextString.replace('0', target);
+        nextString = nextString.replace('-', '0');
+        return nextString;
+    }
+
+    private static boolean isValidZone(int ny, int nx) {
+        return ny >= 0 && ny < 3 && nx >= 0 && nx < 3;
     }
 }
