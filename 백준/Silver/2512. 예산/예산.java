@@ -2,47 +2,50 @@ import java.io.*;
 import java.util.*;
 
 class Main {
-    public static void main(String[] args) {
-        Scanner sc = new Scanner(System.in);
+    static int[] arr;
+    public static void main(String[] args) throws IOException {
+        BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+        StringTokenizer st = null;
 
-        int n = sc.nextInt();
-        int[] requests = new int[n];
+        int n = Integer.parseInt(br.readLine());
+
+        arr = new int[n];
+        int left = 0;
+        int right = 0;
+
+        st = new StringTokenizer(br.readLine());
         for (int i = 0; i < n; i++) {
-            requests[i] = sc.nextInt();
-        }
-        int totalBudget = sc.nextInt();
-
-        System.out.println(findMaxAllocation(requests, totalBudget));
-    }
-
-    public static int findMaxAllocation(int[] requests, int totalBudget) {
-        int low = 0;
-        int high = 0;
-        for (int req : requests) {
-            if (req > high) {
-                high = req;
-            }
+            arr[i] = Integer.parseInt(st.nextToken());
+            right = Math.max(right, arr[i]);
         }
 
-        int result = 0;
-        while (low <= high) {
-            int mid = (low + high) / 2;
-            if (isFeasible(requests, totalBudget, mid)) {
-                result = mid;
-                low = mid + 1;
+        int budget = Integer.parseInt(br.readLine());
+
+        int mid = 0;
+        int ans = 0;
+
+        while (left <= right) {
+            mid = (left + right) / 2;
+             if (isAble(mid, budget)) {
+                left = mid + 1;
+                ans = mid;
             } else {
-                high = mid - 1;
+                right = mid - 1;
+            }
+        }
+        System.out.println(ans);
+    }
+
+    private static boolean isAble(int mid, int budget) {
+        int total = 0;
+        for (int i : arr) {
+            if (i <= mid) {
+                total += i;
+            } else {
+                total += mid;
             }
         }
 
-        return result;
-    }
-
-    public static boolean isFeasible(int[] requests, int totalBudget, int cap) {
-        int sum = 0;
-        for (int req : requests) {
-            sum += Math.min(req, cap);
-        }
-        return sum <= totalBudget;
+        return total <= budget;
     }
 }
