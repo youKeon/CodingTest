@@ -27,11 +27,13 @@ class Main {
                 }
             }
 
-            if (og.length() == comp.length() && (og.length() == count || og.length() - 1 == count)) {
+            if (og.length() == comp.length()) {
+                if (count == og.length() || count == og.length() - 1) {
+                    ans++;
+                }
+            } else if (og.length() - 1 == comp.length() && count == comp.length()) {
                 ans++;
-            } else if (og.length() == comp.length() - 1 && comp.length() - 1 == count) {
-                ans++;
-            } else if (og.length() == comp.length() + 1 && comp.length() == count) {
+            } else if (og.length() + 1 == comp.length() && count == comp.length() - 1) {
                 ans++;
             }
         }
