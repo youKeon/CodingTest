@@ -18,15 +18,35 @@ class Main {
             }
         }
 
-        for (int i = 0; i < count0 / 2; i++) {
-            sb.append('0');
+        count0 /= 2;
+        count1 /= 2;
+        int p0 = 0;
+        int p1 = 0;
+
+        for (int i = 0; i < arr.length; i++) {
+            if (arr[i] == '1') {
+                if (count1 != 0) {
+                    count1--;
+                    arr[i] = '-';
+                }
+            }
         }
 
-        for (int i = 0; i < count1 / 2; i++) {
-            sb.append('1');
+        for (int i = arr.length - 1; i >= 0; i--) {
+            if (arr[i] == '0') {
+                if (count0 != 0) {
+                    count0--;
+                    arr[i] = '-';
+                }
+            }
         }
 
-        System.out.print(sb);
+        for (char c : arr) {
+            if (c != '-') {
+                sb.append(c);
+            }
+        }
+        System.out.println(sb);
     }
 }
 
