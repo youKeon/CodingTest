@@ -5,25 +5,25 @@ class Main {
 
     public static void main(String[] args) throws IOException{
         BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
-        BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(System.out));
-        List<Integer> ans = new ArrayList<>();
+        StringBuilder sb = new StringBuilder();
+        StringTokenizer st = null;
 
         int n = Integer.parseInt(br.readLine());
         int[] arr = new int[n + 1];
+        List<Integer> list = new ArrayList<>();
 
-        StringTokenizer st = new StringTokenizer(br.readLine());
-        for (int i = 1; i <= n; i++) {
-            arr[i] = Integer.parseInt(st.nextToken());
+        st = new StringTokenizer(br.readLine());
+        for (int i = 0; i < n; i++) {
+            arr[i + 1] = Integer.parseInt(st.nextToken());
         }
 
         for (int i = n; i >= 1; i--) {
-            ans.add(arr[i], i);
+            list.add(arr[i], i);
         }
 
-        for (Integer i : ans) {
-            bw.write(i + " ");
+        for (Integer i : list) {
+            sb.append(i).append(" ");
         }
-        bw.close();
-        br.close();
+        System.out.print(sb);
     }
 }
