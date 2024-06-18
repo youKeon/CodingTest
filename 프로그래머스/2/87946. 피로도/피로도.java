@@ -1,27 +1,41 @@
 class Solution {
-    int k, ans;
+    int k;
+    int ans;
     int[][] dungeons;
     boolean[] isVisited;
+    
+    public int solution(int k, int[][] dungeons) {
+        this.dungeons = dungeons;
+        this.k = k;
+        this.ans = Integer.MIN_VALUE;
+        this.isVisited = new boolean[dungeons.length];
+        
+        dfs(k, 0);
+        
+        return ans;
+    }
+    
+    private void dfs(int remain, int depth) {
+        if (depth == dungeons.length) {
+            ans = depth;
+            return;
+        }
+        
+        ans = Math.max(ans, depth);
 
-    public void dfs(int l, int cnt) {
+        if (remain == 0) {
+            return;
+        }
+        
         for (int i = 0; i < dungeons.length; i++) {
-            if (!isVisited[i] && l >= dungeons[i][0]) {
+            if (!isVisited[i] && remain >= dungeons[i][0]) {
                 isVisited[i] = true;
-                dfs(l - dungeons[i][1], cnt + 1);
+                dfs(remain - dungeons[i][1], depth + 1);
                 isVisited[i] = false;
             }
         }
-        ans = Math.max(ans, cnt);
-    }
-
-    public int solution(int k, int[][] dungeons) {
-        this.k = k;
-        this.dungeons = dungeons;
-        this.isVisited = new boolean[dungeons.length];
-        ans = 0;
-
-        dfs(k, 0);
-
-        return ans;
     }
 }
+
+// [80, 20]
+// 최소 80이 필요하고 20이 소모됨
