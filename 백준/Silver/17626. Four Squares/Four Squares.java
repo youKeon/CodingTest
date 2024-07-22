@@ -4,6 +4,8 @@ import java.util.*;
 class Main {
     public static void main(String[] args) throws IOException {
         BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+        StringTokenizer st = null;
+
         int n = Integer.parseInt(br.readLine());
         int[] dp = new int[n + 1];
         Arrays.fill(dp, Integer.MAX_VALUE);
