@@ -1,112 +1,110 @@
 import java.io.*;
 import java.util.*;
 
-public class Main {
-    static class Shark {
-        int y, x, size, eaten;
-        public Shark(int y, int x, int size, int eaten) {
+class Main {
+    static int N;
+    static int[][] map, isVisited;
+    static int[] dy = {-1, 1, 0, 0};
+    static int[] dx = {0, 0, -1, 1};
+    static class Node {
+        int y;
+        int x;
+        int dist;
+
+        public Node(int y, int x, int dist) {
             this.y = y;
             this.x = x;
-            this.size = size;
-            this.eaten = eaten;
+            this.dist = dist;
         }
     }
 
-    static int N;
-    static int[][] map;
-    static boolean[][] visited;
-    static int[] dy = {-1, 1, 0, 0};
-    static int[] dx = {0, 0, -1, 1};
+    static class Shark extends Node {
+        int size;
+        int count;
+
+        public Shark(int y, int x) {
+            super(y, x, 0);
+            this.size = 2;
+            this.count = 0;
+        }
+    }
 
     public static void main(String[] args) throws IOException {
         BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+        StringTokenizer st = null;
+
         N = Integer.parseInt(br.readLine());
         map = new int[N][N];
-
         Shark shark = null;
 
         for (int i = 0; i < N; i++) {
-            StringTokenizer st = new StringTokenizer(br.readLine());
+            st = new StringTokenizer(br.readLine());
             for (int j = 0; j < N; j++) {
                 map[i][j] = Integer.parseInt(st.nextToken());
                 if (map[i][j] == 9) {
-                    shark = new Shark(i, j, 2, 0);
+                    shark = new Shark(i, j);
                     map[i][j] = 0;
                 }
             }
         }
 
-        int time = 0;
+        int ans = 0;
         while (true) {
-            int[] result = bfs(shark);
-            if (result[0] == -1) break;
-
-            int dist = result[0];
-            int y = result[1];
-            int x = result[2];
-
-            time += dist;
-            shark.y = y;
-            shark.x = x;
-            shark.eaten++;
-
-            if (shark.eaten == shark.size) {
-                shark.size++;
-                shark.eaten = 0;
+            isVisited = new int[N][N];
+            for (int[] i : isVisited) {
+                Arrays.fill(i, -1);
             }
+            Node result = bfs(shark);
+            if (result.y == -1) break;
+            shark.y = result.y;
+            shark.x = result.x;
+            ans += result.dist;
 
-            map[y][x] = 0;
+            if (++shark.count == shark.size) {
+                shark.size++;
+                shark.count = 0;
+            }
+            map[result.y][result.x] = 0;
         }
-
-        System.out.println(time);
+        System.out.println(ans);
     }
 
-    private static int[] bfs(Shark shark) {
-        Queue<int[]> queue = new LinkedList<>();
-        visited = new boolean[N][N];
-        queue.add(new int[]{shark.y, shark.x, 0});
-        visited[shark.y][shark.x] = true;
+    private static Node bfs(Shark shark) {
+        Deque<Node> dq = new ArrayDeque<>();
+        List<Node> result = new ArrayList<>();
+        dq.offer(new Node(shark.y, shark.x, 0));
+        isVisited[shark.y][shark.x] = 0;
+        int min = Integer.MAX_VALUE;
 
-        List<int[]> fishes = new ArrayList<>();
+        while (!dq.isEmpty()) {
+            Node cur = dq.poll();
 
-        int minDist = Integer.MAX_VALUE;
-
-        while (!queue.isEmpty()) {
-            int[] current = queue.poll();
-            int y = current[0];
-            int x = current[1];
-            int dist = current[2];
-
-            if (dist > minDist) break;
+            if (cur.dist > min) break;
 
             for (int i = 0; i < 4; i++) {
-                int ny = y + dy[i];
-                int nx = x + dx[i];
+                int ny = cur.y + dy[i];
+                int nx = cur.x + dx[i];
 
-                if (ny >= 0 && ny < N && nx >= 0 && nx < N && !visited[ny][nx]) {
-                    visited[ny][nx] = true;
+                if (ny >= 0 && ny < N && nx >= 0 && nx < N && isVisited[ny][nx] == -1) {
+                    isVisited[ny][nx] = isVisited[cur.y][cur.x] + 1;
 
-                    if (map[ny][nx] > 0 && map[ny][nx] < shark.size) {
-                        minDist = dist;
-                        fishes.add(new int[]{dist + 1, ny, nx});
-                    }
-
-                    // 상어가 지나갈 수 있는 경우
                     if (map[ny][nx] == 0 || map[ny][nx] == shark.size) {
-                        queue.add(new int[]{ny, nx, dist + 1});
+                        dq.offer(new Node(ny, nx, cur.dist + 1));
+                    }
+                    
+                    if (map[ny][nx] != 0 && map[ny][nx] < shark.size) {
+                        result.add(new Node(ny, nx, cur.dist + 1));
+                        min = cur.dist;
                     }
                 }
             }
         }
-
-        if (fishes.isEmpty()) return new int[]{-1, -1, -1};
-
-        // 가장 가까운 물고기 중에서 위, 왼쪽 순으로 정렬
-        fishes.sort((a, b) -> {
-            if (a[1] == b[1]) return Integer.compare(a[2], b[2]);
-            return Integer.compare(a[1], b[1]);
+        if (result.isEmpty()) return new Node(-1, -1, -1);
+        result.sort((o1, o2) -> {
+            if (o1.dist != o2.dist) return o1.dist - o2.dist;
+            if (o1.y != o2.y) return o1.y - o2.y;
+            return o1.x - o2.x;
         });
-
-        return fishes.get(0); // 최종 선택된 물고기 정보 반환
+        return result.get(0);
     }
 }
