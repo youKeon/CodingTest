@@ -2,52 +2,56 @@ import java.io.*;
 import java.util.*;
 
 class Main {
-    static final String ANSWER = "123456780";
-    static Map<String, Integer> isVisited = new HashMap<>();
-    static String[][] map;
+    static Map<String, Integer> countMap = new HashMap<>();
+    static final String GOAL = "123456780";
+    static int[][] map;
+    static boolean[][] isVisited;
     static int[] dy = {-1, 1, 0, 0};
     static int[] dx = {0, 0, -1, 1};
-
     public static void main(String[] args) throws IOException {
         BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
         StringTokenizer st = null;
-
-        map = new String[9][9];
+        map = new int[3][3];
         String init = "";
+
         for (int i = 0; i < 3; i++) {
             st = new StringTokenizer(br.readLine());
             for (int j = 0; j < 3; j++) {
-                map[i][j] = st.nextToken();
+                map[i][j] = Integer.parseInt(st.nextToken());
                 init += map[i][j];
             }
         }
 
-        int result = bfs(init);
-        System.out.print(result);
+        int ans = bfs(init);
+        System.out.println(ans);
     }
 
     private static int bfs(String init) {
-        Queue<String> q = new LinkedList<>();
-        isVisited.put(init, 0);
-        q.add(init);
+        Deque<String> dq = new ArrayDeque<>();
 
-        while (!q.isEmpty()) {
-            String cur = q.poll();
-            if (cur.equals(ANSWER)) return isVisited.get(cur);
-            int indexOfZero = cur.indexOf("0");
-            int y = indexOfZero / 3;
-            int x = indexOfZero % 3;
+        countMap.put(init, 0);
+        dq.offer(init);
 
-            for (int i = 0; i < 4; i++) {
-                int ny = y + dy[i];
-                int nx = x + dx[i];
+        while (!dq.isEmpty()) {
+            int len = dq.size();
+            for (int i = 0; i < len; i++) {
+                String cur = dq.poll();
 
-                if (isValid(ny, nx)) {
-                    String nextString = swap(cur, ny, nx);
+                if (cur.equals(GOAL)) return countMap.get(cur);
 
-                    if (!isVisited.containsKey(nextString)) {
-                        q.add(nextString);
-                        isVisited.put(nextString, isVisited.get(cur) + 1);
+                int idx = cur.indexOf('0');
+                int y = idx / 3;
+                int x = idx % 3;
+                for (int j = 0; j < 4; j++) {
+                    int ny = y + dy[j];
+                    int nx = x + dx[j];
+
+                    if (ny >= 0 && ny < 3 && nx >= 0 && nx < 3) {
+                        String tmp = swap(ny, nx, cur);
+                        if (!countMap.containsKey(tmp)) {
+                            dq.offer(tmp);
+                            countMap.put(tmp, countMap.get(cur) + 1);
+                        }
                     }
                 }
             }
@@ -55,15 +59,14 @@ class Main {
         return -1;
     }
 
-    private static String swap(String cur, int ny, int nx) {
-        char target = cur.charAt((ny * 3) + nx);
-        String nextString = cur.replace(target, '-');
-        nextString = nextString.replace('0', target);
-        nextString = nextString.replace('-', '0');
-        return nextString;
-    }
+    private static String swap(int y, int x, String str) {
+        int zeroIndex = str.indexOf('0');
+        int nextIndex = (y * 3) + x;
+        char nextChar = str.charAt(nextIndex);
 
-    private static boolean isValid(int ny, int nx) {
-        return ny >= 0 && ny < 3 && nx >= 0 && nx < 3;
+        str = str.replace('0', '-');
+        str = str.replace(nextChar, '0');
+        str = str.replace('-', nextChar);
+        return str;
     }
 }
