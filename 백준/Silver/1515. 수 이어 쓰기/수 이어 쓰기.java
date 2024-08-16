@@ -4,32 +4,25 @@ import java.util.*;
 class Main {
     public static void main(String[] args) throws IOException {
         BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
-        String number = br.readLine();
-        int pointer = 0;
-        int ans = 0;
 
-        for (int i = 1; i <= 30000 ; i++) {
-            String target = String.valueOf(i);
-            for (int j = 0; j < target.length(); j++) {
-                if (target.charAt(j) == number.charAt(pointer)) {
-                    pointer++;
-
-                    if (pointer == number.length()) {
-                        ans = i;
-                        break;
+        String str = br.readLine();
+        int index = 0;
+        long num = 1;
+        if (str.equals("0")) {
+            System.out.println(10);
+        } else {
+            while (index < str.length()) {
+                String s = String.valueOf(num);
+                if (s.contains(String.valueOf(str.charAt(index)))) {
+                    int p = 0;
+                    while (index < str.length() && p < s.length()) {
+                        if (str.charAt(index) == s.charAt(p)) index++;
+                        p++;
                     }
                 }
+                num++;
             }
-            if (ans != 0) break;
+            System.out.println(num - 1);
         }
-        System.out.println(ans);
-
     }
 }
-
-/**
- * 1부터 N까지 적음
- * 몇 개의 숫자를 지움
- * N이 기억이 안남
- * 남은 수를 
- */
