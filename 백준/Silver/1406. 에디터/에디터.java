@@ -4,51 +4,38 @@ import java.util.*;
 class Main {
     public static void main(String[] args) throws IOException {
         BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
-        StringBuilder sb = new StringBuilder();
-        
-        String initialString = br.readLine();
-        int commandCount = Integer.parseInt(br.readLine());
-        
-        Stack<Character> leftStack = new Stack<>();
-        Stack<Character> rightStack = new Stack<>();
-        
-        for (char c : initialString.toCharArray()) {
-            leftStack.push(c);
-        }
-        
-        for (int i = 0; i < commandCount; i++) {
-            String command = br.readLine();
+        StringTokenizer st = null;
 
-            switch (command.charAt(0)) {
-                case 'L':
-                    if (!leftStack.isEmpty()) {
-                        rightStack.push(leftStack.pop());
-                    }
-                    break;
-                case 'D':
-                    if (!rightStack.isEmpty()) {
-                        leftStack.push(rightStack.pop());
-                    }
-                    break;
-                case 'B':
-                    if (!leftStack.isEmpty()) {
-                        leftStack.pop();
-                    }
-                    break;
-                case 'P':
-                    char x = command.charAt(2);
-                    leftStack.push(x);
-                    break;
+        String str = br.readLine();
+        int n = Integer.parseInt(br.readLine());
+        Deque<Character> left = new ArrayDeque<>();
+        Deque<Character> right = new ArrayDeque<>();
+
+        for (char c : str.toCharArray()) left.push(c);
+        while (n-- > 0) {
+            String[] arr = br.readLine().split(" ");
+            switch (arr[0]) {
+                case "L" -> {
+                    if (!left.isEmpty()) right.push(left.pop());
+                }
+                case "D" -> {
+                    if (!right.isEmpty()) left.push(right.pop());
+                }
+                case "B" -> {
+                    if (!left.isEmpty()) left.pop();
+                }
+                case "P" -> {
+                    left.push(arr[1].charAt(0));
+                }
             }
         }
-
-        while (!leftStack.isEmpty()) {
-            rightStack.push(leftStack.pop());
+        while (!left.isEmpty()) {
+            right.push(left.pop());
         }
-        while (!rightStack.isEmpty()) {
-            sb.append(rightStack.pop());
+        StringBuilder sb = new StringBuilder();
+        while (!right.isEmpty()) {
+            sb.append(right.pop());
         }
-
-        System.out.println(sb);
+        System.out.print(sb);
     }
 }
