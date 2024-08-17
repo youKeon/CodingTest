@@ -4,51 +4,51 @@ import java.util.*;
 class Main {
     public static void main(String[] args) throws IOException {
         BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
-        BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(System.out));
-
-        Stack<String> left = new Stack<>();
-        Stack<String> right = new Stack<>();
-        String[] arr = br.readLine().split("");
-        int m = Integer.parseInt(br.readLine());
-
-        for(String s : arr) {
-            left.push(s);
+        StringBuilder sb = new StringBuilder();
+        
+        String initialString = br.readLine();
+        int commandCount = Integer.parseInt(br.readLine());
+        
+        Stack<Character> leftStack = new Stack<>();
+        Stack<Character> rightStack = new Stack<>();
+        
+        for (char c : initialString.toCharArray()) {
+            leftStack.push(c);
         }
-
-        for(int i = 0; i < m; i++) {
+        
+        for (int i = 0; i < commandCount; i++) {
             String command = br.readLine();
-            char c = command.charAt(0);
 
-            switch(c) {
+            switch (command.charAt(0)) {
                 case 'L':
-                    if(!left.isEmpty()) {
-                        right.push(left.pop());
+                    if (!leftStack.isEmpty()) {
+                        rightStack.push(leftStack.pop());
                     }
                     break;
-
                 case 'D':
-                    if(!right.isEmpty()) {
-                        left.push(right.pop());
+                    if (!rightStack.isEmpty()) {
+                        leftStack.push(rightStack.pop());
                     }
                     break;
-
                 case 'B':
-                    if(!left.isEmpty()) {
-                        left.pop();
+                    if (!leftStack.isEmpty()) {
+                        leftStack.pop();
                     }
                     break;
-
                 case 'P':
-                    char t = command.charAt(2);
-                    left.push(String.valueOf(t));
+                    char x = command.charAt(2);
+                    leftStack.push(x);
                     break;
             }
         }
 
-        while(!left.isEmpty()) right.push(left.pop());
-        while(!right.isEmpty()) bw.write(right.pop());
+        while (!leftStack.isEmpty()) {
+            rightStack.push(leftStack.pop());
+        }
+        while (!rightStack.isEmpty()) {
+            sb.append(rightStack.pop());
+        }
 
-        bw.close();
-        bw.close();
+        System.out.println(sb);
     }
 }
