@@ -1,59 +1,71 @@
-import java.util.*;
 import java.io.*;
+import java.util.*;
 
 class Main {
-    static final int MAX = 100 + 5;
-    static int n, m, ans;
-    static int[][] map;
-    static int[] distance;
+    static int N, M;
+    static boolean[][] map;
+    static int[] isVisited;
 
-    private static int bfs(int start) {
-        Queue<Integer> q = new LinkedList<>();
-        q.add(start);
-        distance[start] = 0;
-
-        while (!q.isEmpty()) {
-            int cur = q.poll();
-            for (int i = 1; i <= n; i++) {
-                if (distance[i] == -1 && map[cur][i] != 0) {
-                    q.add(i);
-                    distance[i] = distance[cur] + 1;
-                }
-            }
-        }
-        int sum = 0;
-        for (int i = 1; i <= n; i++) sum += distance[i];
-        return sum;
-    }
-
-    public static void main(String[] args) throws IOException{
+    public static void main(String[] args) throws IOException {
         BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
-        StringTokenizer st;
+        StringTokenizer st = null;
 
         st = new StringTokenizer(br.readLine());
-        n = Integer.parseInt(st.nextToken());
-        m = Integer.parseInt(st.nextToken());
-        map = new int[MAX][MAX];
+        N = Integer.parseInt(st.nextToken());
+        M = Integer.parseInt(st.nextToken());
+        map = new boolean[N + 1][N + 1];
 
-        for (int i = 1; i <= m; i++) {
+        for (int i = 0; i < M; i++) {
             st = new StringTokenizer(br.readLine());
-            int y = Integer.parseInt(st.nextToken());
-            int x = Integer.parseInt(st.nextToken());
-            map[y][x] = 1;
-            map[x][y] = 1;
+            int from = Integer.parseInt(st.nextToken());
+            int to = Integer.parseInt(st.nextToken());
+
+            map[from][to] = true;
+            map[to][from] = true;
         }
 
         int min = Integer.MAX_VALUE;
-        int ans = 0;
-        for (int i = 1; i <= n; i++) {
-            distance = new int[MAX];
-            Arrays.fill(distance, -1);
-            int count = bfs(i);
-            if (min > count) {
-                min = count;
-                ans = i;
+        List<Integer> list = new ArrayList<>();
+        for (int i = 1; i <= N; i++) {
+            int result = bfs(i);
+
+            if (list.isEmpty()) {
+                list.add(i);
+                min = result;
+                continue;
+            }
+
+            if (min == result) list.add(i);
+            else if (min > result) {
+                list.clear();
+                list.add(i);
+                min = result;
             }
         }
-        System.out.println(ans);
+        list.sort(Comparator.naturalOrder());
+        System.out.println(list.get(0));
+    }
+
+    private static int bfs(int from) {
+        Deque<Integer> dq = new ArrayDeque<>();
+        isVisited = new int[N + 1];
+        Arrays.fill(isVisited, -1);
+        isVisited[from] = 0;
+        dq.offer(from);
+        int result = 0;
+
+        while (!dq.isEmpty()) {
+            Integer cur = dq.poll();
+            for (int i = 1; i <= N; i++) {
+                if (i != cur && isVisited[i] == -1 && map[cur][i]) {
+                    isVisited[i] = isVisited[cur] + 1;
+                    dq.offer(i);
+                }
+            }
+        }
+        for (int i = 1; i <= N; i++) {
+            result += isVisited[i];
+        }
+        return result;
     }
 }
