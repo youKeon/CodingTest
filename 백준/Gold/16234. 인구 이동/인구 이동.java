@@ -3,93 +3,99 @@ import java.util.*;
 
 class Main {
     static int N, L, R;
-    static int[][] A;
-    static boolean[][] visited;
+    static int[][] map;
+    static boolean[][] isVisited;
     static int[] dy = {-1, 1, 0, 0};
     static int[] dx = {0, 0, -1, 1};
 
+    static class Node {
+        int y;
+        int x;
+
+        public Node(int y, int x) {
+            this.y = y;
+            this.x = x;
+        }
+    }
     public static void main(String[] args) throws IOException {
         BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
-        StringTokenizer st = new StringTokenizer(br.readLine());
+        StringTokenizer st = null;
 
+        st = new StringTokenizer(br.readLine());
         N = Integer.parseInt(st.nextToken());
         L = Integer.parseInt(st.nextToken());
         R = Integer.parseInt(st.nextToken());
 
-        A = new int[N][N];
-
+        map = new int[N][N];
         for (int i = 0; i < N; i++) {
             st = new StringTokenizer(br.readLine());
             for (int j = 0; j < N; j++) {
-                A[i][j] = Integer.parseInt(st.nextToken());
+                map[i][j] = Integer.parseInt(st.nextToken());
             }
         }
 
-        int days = 0;
+        int ans = 0;
         while (true) {
-            boolean moved = false;
-            visited = new boolean[N][N];
+            boolean flag = true;
+            isVisited = new boolean[N][N];
 
             for (int i = 0; i < N; i++) {
                 for (int j = 0; j < N; j++) {
-                    if (!visited[i][j]) {
-                        if (bfs(i, j)) {
-                            moved = true;
+                    if (!isVisited[i][j]) {
+                        Set<Node> nodes = bfs(i, j);
+                        if (!nodes.isEmpty()) {
+                            flag = false;
+                            move(nodes);
                         }
                     }
                 }
             }
-
-            if (!moved) {
-                break;
-            }
-            days++;
+            if (flag) break;
+            ans++;
         }
-
-        System.out.println(days);
+        System.out.print(ans);
     }
 
-    private static boolean bfs(int y, int x) {
-        Queue<int[]> queue = new LinkedList<>();
-        List<int[]> union = new ArrayList<>();
+    private static Set<Node> bfs(int y, int x) {
+        Deque<Node> dq = new ArrayDeque<>();
+        Set<Node> nodes = new HashSet<>();
+        dq.offer(new Node(y, x));
+        isVisited[y][x] = true;
 
-        queue.offer(new int[] {y, x});
-        union.add(new int[] {y, x});
-        visited[y][x] = true;
-
-        int sum = A[y][x];
-        int count = 1;
-
-        while (!queue.isEmpty()) {
-            int[] cur = queue.poll();
-            int curY = cur[0];
-            int curX = cur[1];
+        while (!dq.isEmpty()) {
+            Node cur = dq.poll();
 
             for (int i = 0; i < 4; i++) {
-                int ny = curY + dy[i];
-                int nx = curX + dx[i];
+                int ny = cur.y + dy[i];
+                int nx = cur.x + dx[i];
 
-                if (ny >= 0 && ny < N && nx >= 0 && nx < N && !visited[ny][nx]) {
-                    int diff = Math.abs(A[curY][curX] - A[ny][nx]);
+                if (ny >= 0 && ny < N && nx >= 0 && nx < N && !isVisited[ny][nx]) {
+                    int diff = Math.abs(map[cur.y][cur.x] - map[ny][nx]);
+                    Node next = new Node(ny, nx);
+
                     if (diff >= L && diff <= R) {
-                        queue.offer(new int[] {ny, nx});
-                        union.add(new int[] {ny, nx});
-                        visited[ny][nx] = true;
-                        sum += A[ny][nx];
-                        count++;
+                        isVisited[ny][nx] = true;
+                        nodes.add(next);
+                        nodes.add(cur);
+                        dq.offer(next);
                     }
                 }
             }
         }
+        return nodes;
+    }
 
-        if (count > 1) {
-            int newPop = sum / count;
-            for (int[] pos : union) {
-                A[pos[0]][pos[1]] = newPop;
-            }
-            return true;
+    private static void move(Set<Node> nodes) {
+        int sum = 0;
+
+        for (Node node : nodes) {
+            sum += map[node.y][node.x];
         }
 
-        return false;
+        int mid = sum / nodes.size();
+
+        for (Node node : nodes) {
+            map[node.y][node.x] = mid;
+        }
     }
 }
