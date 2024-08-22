@@ -8,26 +8,24 @@ class Main {
 
         int n = Integer.parseInt(br.readLine());
         int[] arr = new int[n];
-        int[] dp = new int[n];
 
-        System.out.print(solution(br, n, arr, dp));
-    }
-
-    private static int solution(BufferedReader br, int n, int[] arr, int[] dp) throws IOException {
-        StringTokenizer st;
         st = new StringTokenizer(br.readLine());
         for (int i = 0; i < n; i++) {
             arr[i] = Integer.parseInt(st.nextToken());
         }
 
-        dp[0] = 1;
-        if (n == 1) return dp[0];
+        int ans = solution(n, arr);
+        System.out.print(ans);
+    }
 
-        dp[1] = arr[1] > arr[0] ? 2 : 1;
-        if (n == 2) return dp[1];
+    private static int solution(int n, int[] arr) {
+        if (n == 1) return 1;
 
         int ans = 0;
-        for (int i = 2; i < n; i++) {
+        int[] dp = new int[n];
+        dp[0] = 1;
+
+        for (int i = 1; i < n; i++) {
             for (int j = 0; j < i; j++) {
                 if (arr[i] > arr[j]) {
                     dp[i] = Math.max(dp[i], dp[j]);
