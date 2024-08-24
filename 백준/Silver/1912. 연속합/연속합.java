@@ -22,11 +22,12 @@ class Main {
 
         int[] dp = new int[n];
         dp[0] = arr[0];
-        int ans = dp[0];
+        int result = dp[0];
+
         for (int i = 1; i < n; i++) {
             dp[i] = Math.max(arr[i], dp[i - 1] + arr[i]);
-            ans = Math.max(ans, dp[i]);
+            result = Math.max(dp[i], result);
         }
-        return ans;
+        return result;
     }
 }
