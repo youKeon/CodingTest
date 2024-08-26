@@ -1,31 +1,28 @@
-import java.io.BufferedReader;
-import java.io.BufferedWriter;
-import java.io.InputStreamReader;
-import java.io.OutputStreamWriter;
+import java.io.*;
 import java.util.*;
 
-class Node {
-    int x;
-    int y;
-
-    Node(int x, int y) {
-        this.x = x;
-        this.y = y;
-    }
-}
-
 class Main {
-    static int[] dx = { -1, 0, 1, 0 };
-    static int[] dy = { 0, 1, 0, -1 };
-
     static int N, M;
     static int[][] map;
+    static boolean[][] isVisited;
+    static int[] dy = {-1, 1, 0, 0};
+    static int[] dx = {0, 0, -1, 1};
 
-    public static void main(String[] args) throws Exception {
+    static class Node {
+        int y;
+        int x;
+
+        public Node(int y, int x) {
+            this.y = y;
+            this.x = x;
+        }
+    }
+
+    public static void main(String[] args) throws IOException {
         BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
-        BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(System.out));
-        StringTokenizer st = new StringTokenizer(br.readLine());
+        StringTokenizer st = null;
 
+        st = new StringTokenizer(br.readLine());
         N = Integer.parseInt(st.nextToken());
         M = Integer.parseInt(st.nextToken());
 
@@ -38,93 +35,77 @@ class Main {
         }
 
         int ans = 0;
-        int count = 0;
-
-        while ((count = getCount()) < 2) {
-            if (count == 0) {
-                ans = 0;
+        while (true) {
+            int size = getSize();
+            if (size > 1) {
+                System.out.print(ans);
                 break;
             }
 
-            Melt();
-            ans++;
-        }
+            if (size == 0) {
+                System.out.print(0);
+                break;
+            }
 
-        bw.write(ans + "\n");
-        bw.flush();
-        bw.close();
-        br.close();
+            ans++;
+            melt();
+        }
     }
 
-    public static int getCount() {
-        boolean[][] isVisited = new boolean[N][M];
+    private static int getSize() {
+        int size = 0;
+        isVisited = new boolean[N][M];
 
-        int cnt = 0;
         for (int i = 0; i < N; i++) {
             for (int j = 0; j < M; j++) {
                 if (map[i][j] != 0 && !isVisited[i][j]) {
-                    dfs(i, j, isVisited);
-                    cnt++;
+                    size++;
+                    bfs(i, j);
                 }
             }
         }
-        return cnt;
+        return size;
     }
 
-    public static void dfs(int x, int y, boolean[][] isVisited) {
-        isVisited[x][y] = true;
-
-        int dx, dy;
-        for (int i = 0; i < 4; i++) {
-            dx = x + Main.dx[i];
-            dy = y + Main.dy[i];
-
-            if (dx < 0 || dy < 0 || dx >= N || dy >= M) {
-                continue;
-            }
-
-            if (map[dx][dy] != 0 && !isVisited[dx][dy]) {
-                dfs(dx, dy, isVisited);
-            }
-        }
-    }
-
-    // 빙하를 녹이는 함수.
-    public static void Melt() {
+    private static void bfs(int y, int x) {
         Deque<Node> dq = new ArrayDeque<>();
-        boolean[][] visited = new boolean[N][M];
-        for (int i = 0; i < N; i++) {
-            for (int j = 0; j < M; j++) {
-                if (map[i][j] != 0) {
-                    dq.offer(new Node(i, j));
-                    visited[i][j] = true;
-                }
-            }
-        }
+        dq.offer(new Node(y, x));
+        isVisited[y][x] = true;
 
-        int dx, dy;
         while (!dq.isEmpty()) {
             Node cur = dq.poll();
 
-            int count = 0; 
-
             for (int i = 0; i < 4; i++) {
-                dx = cur.x + Main.dx[i];
-                dy = cur.y + Main.dy[i];
+                int ny = cur.y + dy[i];
+                int nx = cur.x + dx[i];
 
-                if (dx < 0 || dy < 0 || dx >= N || dy >= M) {
-                    continue;
-                }
-
-                if (!visited[dx][dy] && map[dx][dy] == 0) {
-                    count++;
+                if (ny >= 0 && ny < N && nx >= 0 && nx < M && !isVisited[ny][nx] && map[ny][nx] != 0) {
+                    dq.offer(new Node(ny, nx));
+                    isVisited[ny][nx] = true;
                 }
             }
+        }
+    }
 
-            if (map[cur.x][cur.y] - count < 0) {
-                map[cur.x][cur.y] = 0;
-            } else {
-                map[cur.x][cur.y] -= count;
+    private static void melt() {
+        int[][] copyMap = new int[N][M];
+        for (int i = 0; i < N; i++) {
+            copyMap[i] = map[i].clone();
+        }
+
+        for (int i = 0; i < N; i++) {
+            for (int j = 0; j < M; j++) {
+                if (copyMap[i][j] != 0) {
+                    int count = 0;
+                    for (int k = 0; k < 4; k++) {
+                        int ny = i + dy[k];
+                        int nx = j + dx[k];
+                        if (ny >= 0 && ny < N && nx >= 0 && nx < M && copyMap[ny][nx] == 0) {
+                            count++;
+                        }
+                    }
+                    map[i][j] = Math.max(map[i][j] - count, 0);
+                }
             }
         }
     }
