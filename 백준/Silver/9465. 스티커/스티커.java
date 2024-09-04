@@ -4,36 +4,41 @@ import java.util.*;
 class Main {
     public static void main(String[] args) throws IOException {
         BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
-        int T = Integer.parseInt(br.readLine());
-        StringBuilder sb = new StringBuilder();
+        StringTokenizer st = null;
 
-        while (T-- > 0) {
+        int tc = Integer.parseInt(br.readLine());
+        StringBuilder answer = new StringBuilder();
+
+        while (tc-- > 0) {
             int n = Integer.parseInt(br.readLine());
-            int[][] sticker = new int[2][n];
-            int[][] dp = new int[2][n];
+            int[][] arr = new int[2][n];
 
             for (int i = 0; i < 2; i++) {
-                StringTokenizer st = new StringTokenizer(br.readLine());
+                st = new StringTokenizer(br.readLine());
                 for (int j = 0; j < n; j++) {
-                    sticker[i][j] = Integer.parseInt(st.nextToken());
+                    arr[i][j] = Integer.parseInt(st.nextToken());
                 }
             }
-
-            dp[0][0] = sticker[0][0];
-            dp[1][0] = sticker[1][0];
-
-            if (n > 1) {
-                dp[0][1] = sticker[1][0] + sticker[0][1];
-                dp[1][1] = sticker[0][0] + sticker[1][1];
-            }
-
-            for (int i = 2; i < n; i++) {
-                dp[0][i] = Math.max(dp[1][i-1], dp[1][i-2]) + sticker[0][i];
-                dp[1][i] = Math.max(dp[0][i-1], dp[0][i-2]) + sticker[1][i];
-            }
-
-            sb.append(Math.max(dp[0][n-1], dp[1][n-1])).append("\n");
+            answer.append(solution(arr)).append("\n");
         }
-        System.out.print(sb);
+        System.out.print(answer);
+    }
+
+    private static int solution(int[][] arr) {
+        if (arr[0].length == 1) return Math.max(arr[0][0], arr[1][0]);
+
+        int[][] dp = new int[2][arr[0].length];
+        dp[0][0] = arr[0][0];
+        dp[1][0] = arr[1][0];
+
+        dp[0][1] = arr[1][0] + arr[0][1];
+        dp[1][1] = arr[0][0] + arr[1][1];
+
+        for (int i = 2; i < arr[0].length; i++) {
+            dp[0][i] = Math.max(dp[1][i - 2], dp[1][i - 1]) + arr[0][i];
+            dp[1][i] = Math.max(dp[0][i - 2], dp[0][i - 1]) + arr[1][i];
+        }
+
+        return Math.max(dp[1][arr[0].length - 1], dp[0][arr[0].length - 1]);
     }
 }
