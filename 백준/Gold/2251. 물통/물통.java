@@ -1,76 +1,81 @@
 import java.util.*;
 
 class Main {
-    static class State {
-        int[] jugs;
-        State(int a, int b, int c) {
-            jugs = new int[]{a, b, c};
-        }
-
-        @Override
-        public boolean equals(Object o) {
-            if (this == o) return true;
-            if (o == null || getClass() != o.getClass()) return false;
-            State state = (State) o;
-            return Arrays.equals(jugs, state.jugs);
-        }
-
-        @Override
-        public int hashCode() {
-            return Arrays.hashCode(jugs);
-        }
-    }
-
-    public static Set<Integer> solve(int A, int B, int C) {
-        int[] capacities = {A, B, C};
-        Set<Integer> result = new TreeSet<>();
-        Queue<State> queue = new LinkedList<>();
-        Set<State> visited = new HashSet<>();
-
-        State initial = new State(0, 0, C);
-        queue.offer(initial);
-        visited.add(initial);
-
-        while (!queue.isEmpty()) {
-            State current = queue.poll();
-
-            if (current.jugs[0] == 0) {
-                result.add(current.jugs[2]);
-            }
-
-            for (int i = 0; i < 3; i++) {
-                for (int j = 0; j < 3; j++) {
-                    if (i != j) {
-                        State next = pour(current, i, j, capacities);
-                        if (!visited.contains(next)) {
-                            visited.add(next);
-                            queue.offer(next);
-                        }
-                    }
-                }
-            }
-        }
-
-        return result;
-    }
-
-    private static State pour(State current, int from, int to, int[] capacities) {
-        int[] newJugs = Arrays.copyOf(current.jugs, 3);
-        int amount = Math.min(current.jugs[from], capacities[to] - current.jugs[to]);
-        newJugs[from] -= amount;
-        newJugs[to] += amount;
-        return new State(newJugs[0], newJugs[1], newJugs[2]);
-    }
+    static boolean[][][] visited;
+    static Set<Integer> results;
+    static int A, B, C;
 
     public static void main(String[] args) {
-        Scanner scanner = new Scanner(System.in);
-        int A = scanner.nextInt();
-        int B = scanner.nextInt();
-        int C = scanner.nextInt();
+        Scanner sc = new Scanner(System.in);
+        A = sc.nextInt();
+        B = sc.nextInt();
+        C = sc.nextInt();
+        visited = new boolean[201][201][201];
+        results = new HashSet<>();
+        bfs(0, 0, C);
+        List<Integer> answer = new ArrayList<>(results);
+        Collections.sort(answer);
+        for (int res : answer) {
+            System.out.print(res + " ");
+        }
+    }
 
-        Set<Integer> result = solve(A, B, C);
-        for (int amount : result) {
-            System.out.print(amount + " ");
+    private static void bfs(int a, int b, int c) {
+        Queue<int[]> queue = new LinkedList<>();
+        queue.add(new int[]{a, b, c});
+        visited[a][b][c] = true;
+        while (!queue.isEmpty()) {
+            int[] current = queue.poll();
+            int ca = current[0];
+            int cb = current[1];
+            int cc = current[2];
+            if (ca == 0) results.add(cc);
+            moveWater(queue, ca, cb, cc, A, B, C);
+        }
+    }
+
+    private static void moveWater(Queue<int[]> queue, int ca, int cb, int cc, int A, int B, int C) {
+        // A -> B
+        pour(queue, ca, cb, cc, Math.min(ca, B - cb), 'A', 'B');
+        // A -> C
+        pour(queue, ca, cb, cc, Math.min(ca, C - cc), 'A', 'C');
+        // B -> A
+        pour(queue, ca, cb, cc, Math.min(cb, A - ca), 'B', 'A');
+        // B -> C
+        pour(queue, ca, cb, cc, Math.min(cb, C - cc), 'B', 'C');
+        // C -> A
+        pour(queue, ca, cb, cc, Math.min(cc, A - ca), 'C', 'A');
+        // C -> B
+        pour(queue, ca, cb, cc, Math.min(cc, B - cb), 'C', 'B');
+    }
+
+    private static void pour(Queue<int[]> queue, int ca, int cb, int cc, int water, char from, char to) {
+        int new_ca = ca, new_cb = cb, new_cc = cc;
+        switch (from) {
+            case 'A':
+                new_ca -= water;
+                break;
+            case 'B':
+                new_cb -= water;
+                break;
+            case 'C':
+                new_cc -= water;
+                break;
+        }
+        switch (to) {
+            case 'A':
+                new_ca += water;
+                break;
+            case 'B':
+                new_cb += water;
+                break;
+            case 'C':
+                new_cc += water;
+                break;
+        }
+        if (!visited[new_ca][new_cb][new_cc]) {
+            visited[new_ca][new_cb][new_cc] = true;
+            queue.add(new int[]{new_ca, new_cb, new_cc});
         }
     }
 }
