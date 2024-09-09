@@ -2,50 +2,56 @@ import java.io.*;
 import java.util.*;
 
 class Main {
+    static int N, M;
+    static int[] map;
+    static int[] isVisited;
+
     public static void main(String[] args) throws IOException {
         BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
-        StringTokenizer st = new StringTokenizer(br.readLine());
-        
-        int N = Integer.parseInt(st.nextToken());
-        int M = Integer.parseInt(st.nextToken());
-        
-        int[] board = new int[101];
-        boolean[] visited = new boolean[101];
-        
+        StringTokenizer st = null;
+
+        st = new StringTokenizer(br.readLine());
+        N = Integer.parseInt(st.nextToken());
+        M = Integer.parseInt(st.nextToken());
+        map = new int[101];
+        isVisited = new int[101];
+        Arrays.fill(isVisited, -1);
+
+
         for (int i = 0; i < N + M; i++) {
             st = new StringTokenizer(br.readLine());
-            int x = Integer.parseInt(st.nextToken());
-            int y = Integer.parseInt(st.nextToken());
-            board[x] = y;
+            map[Integer.parseInt(st.nextToken())] = Integer.parseInt(st.nextToken());
         }
-        
-        Queue<int[]> queue = new LinkedList<>();
-        queue.offer(new int[]{1, 0}); 
-        visited[1] = true;
-        
-        while (!queue.isEmpty()) {
-            int[] current = queue.poll();
-            int position = current[0];
-            int count = current[1];
-            
-            if (position == 100) {
-                System.out.println(count);
-                return;
-            }
-            
+
+        int answer = bfs();
+        System.out.print(answer);
+    }
+
+    private static int bfs() {
+        Deque<Integer> dq = new ArrayDeque<>();
+        isVisited[1] = 0;
+        dq.offer(1);
+
+        while (!dq.isEmpty()) {
+            int cur = dq.poll();
+
+            if (cur == 100) return isVisited[cur];
+
             for (int i = 1; i <= 6; i++) {
-                int next = position + i;
-                if (next > 100) continue;
-                
-                if (board[next] != 0) {
-                    next = board[next];
-                }
-                
-                if (!visited[next]) {
-                    visited[next] = true;
-                    queue.offer(new int[]{next, count + 1});
+                int next = cur + i;
+
+                if (next <= 100) {
+                    if (map[next] != 0) {
+                        next = map[next];
+                    }
+
+                    if (isVisited[next] == -1) {
+                        isVisited[next] = isVisited[cur] + 1;
+                        dq.offer(next);
+                    }
                 }
             }
         }
+        return 0;
     }
 }
