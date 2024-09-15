@@ -25,32 +25,34 @@ class Main {
         R = Integer.parseInt(st.nextToken());
         C = Integer.parseInt(st.nextToken());
 
-        map = new char[R + 1][C + 1];
+        map = new char[R][C];
+        isVisited = new boolean[R][C];
+
         for (int i = 0; i < R; i++) {
             String line = br.readLine();
             for (int j = 0; j < C; j++) {
-                map[i + 1][j + 1] = line.charAt(j);
+                map[i][j] = line.charAt(j);
             }
         }
 
-        isVisited = new boolean[R + 1][C + 1];
         int answer = 0;
-        for (int i = 1; i <= R; i++) {
-            if (dfs(i, 1)) answer++;
+        for (int i = 0; i < R; i++) {
+            isVisited[i][0] = true;
+            if (isAble(i, 0)) answer++;
         }
         System.out.print(answer);
     }
 
-    private static boolean dfs(int y, int x) {
-        if (x == C) return true;
+    private static boolean isAble(int y, int x) {
+        if (x == C - 1) return true;
 
-        for (int[] d : dir) {
-            int ny = y + d[0];
-            int nx = x + d[1];
+        for (int[] i : dir) {
+            int ny = y + i[0];
+            int nx = x + i[1];
 
-            if (ny >= 1 && ny <= R && nx >= 1 && nx <= C && !isVisited[ny][nx] && map[ny][nx] == '.') {
+            if (ny >= 0 && ny < R && nx >= 0 && nx < C && !isVisited[ny][nx] && map[ny][nx] == '.') {
                 isVisited[ny][nx] = true;
-                if (dfs(ny, nx)) return true;
+                if (isAble(ny, nx)) return true;
             }
         }
         return false;
