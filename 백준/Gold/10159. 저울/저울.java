@@ -2,57 +2,44 @@ import java.io.*;
 import java.util.*;
 
 class Main {
-    static int N, M;
-    static ArrayList<Integer>[] heavy, light;
-    static int[] hCount, lCount;
+    static int N, M, count;
+    static int[][] map;
     static boolean[] isVisited;
 
     public static void main(String[] args) throws IOException {
         BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
-        StringTokenizer st;
+        StringTokenizer st = null;
 
         N = Integer.parseInt(br.readLine());
+        map = new int[N + 1][N + 1];
+
         M = Integer.parseInt(br.readLine());
-
-        heavy = new ArrayList[N + 1];
-        light = new ArrayList[N + 1];
-        hCount = new int[N + 1];
-        lCount = new int[N + 1];
-
-        for (int i = 1; i <= N; i++) {
-            heavy[i] = new ArrayList<>();
-            light[i] = new ArrayList<>();
-        }
-
         for (int i = 0; i < M; i++) {
             st = new StringTokenizer(br.readLine());
-            int a = Integer.parseInt(st.nextToken());
-            int b = Integer.parseInt(st.nextToken());
-            heavy[b].add(a);
-            light[a].add(b);
+            int large = Integer.parseInt(st.nextToken());
+            int small = Integer.parseInt(st.nextToken());
+            map[large][small] = 2;
+            map[small][large] = 1;
         }
 
         for (int i = 1; i <= N; i++) {
+            count = 0;
             isVisited = new boolean[N + 1];
             isVisited[i] = true;
-            
-            dfs(i, heavy, hCount);
-            dfs(i, light, lCount);
-        }
 
-        StringBuilder sb = new StringBuilder();
-        for (int i = 1; i <= N; i++) {
-            sb.append(N - 1 - (hCount[i] + lCount[i])).append('\n');
+            dfs(i, 2);
+            dfs(i, 1);
+
+            System.out.println(N - (count + 1));
         }
-        System.out.print(sb);
     }
 
-    private static void dfs(int l, ArrayList<Integer>[] graph, int[] count) {
-        for (int next : graph[l]) {
-            if (!isVisited[next]) {
-                isVisited[next] = true;
-                count[next]++;
-                dfs(next, graph, count);
+    static void dfs(int l, int dir) {
+        for (int i = 1; i <= N; i++) {
+            if (map[l][i] == dir && !isVisited[i]) {
+                isVisited[i] = true;
+                count++;
+                dfs(i, dir);
             }
         }
     }
