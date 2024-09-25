@@ -7,27 +7,32 @@ class Main {
         StringTokenizer st = null;
 
         int n = Integer.parseInt(br.readLine());
-        int[][] map = new int[n][3];
-        int[][] dp = new int[n][3];
+        int[][] map = new int[n + 1][3];
 
-        for (int i = 0; i < n; i++) {
+        for (int i = 1; i <= n; i++) {
             st = new StringTokenizer(br.readLine());
-            map[i][0] = Integer.parseInt(st.nextToken());
-            map[i][1] = Integer.parseInt(st.nextToken());
-            map[i][2] = Integer.parseInt(st.nextToken());
+            for (int j = 0; j < 3; j++) {
+                map[i][j] = Integer.parseInt(st.nextToken());
+            }
         }
 
-        dp[0][0] = map[0][0];
-        dp[0][1] = map[0][1];
-        dp[0][2] = map[0][2];
+        int ans = solution(n, map);
+        System.out.print(ans);
+    }
 
-        for (int i = 1; i < n; i++) {
+    private static int solution(int n, int[][] map) {
+        int[][] dp = new int[n + 1][3];
+
+        dp[1][0] = map[1][0];
+        dp[1][1] = map[1][1];
+        dp[1][2] = map[1][2];
+
+        for (int i = 2; i <= n; i++) {
             dp[i][0] = Math.min(dp[i - 1][1], dp[i - 1][2]) + map[i][0];
             dp[i][1] = Math.min(dp[i - 1][0], dp[i - 1][2]) + map[i][1];
             dp[i][2] = Math.min(dp[i - 1][0], dp[i - 1][1]) + map[i][2];
         }
 
-        int ans = Math.min(dp[n - 1][0], Math.min(dp[n - 1][1], dp[n - 1][2]));
-        System.out.print(ans);
+        return Math.min(dp[n][0], Math.min(dp[n][1], dp[n][2]));
     }
 }
