@@ -13,15 +13,13 @@ class Main {
         for (int i = 0; i < n; i++) {
             arr[i] = Integer.parseInt(st.nextToken());
         }
-
-        int ans = solution(n, arr);
-        System.out.print(ans);
+        System.out.print(solution(arr, n));
     }
 
-    private static int solution(int n, int[] arr) {
+    private static int solution(int[] arr, int n) {
         if (n == 1) return 1;
 
-        int ans = 0;
+        int result = 0;
         int[] dp = new int[n];
         dp[0] = 1;
 
@@ -32,8 +30,8 @@ class Main {
                 }
             }
             dp[i]++;
-            ans = Math.max(ans, dp[i]);
+            result = Math.max(result, dp[i]);
         }
-        return ans;
+        return result;
     }
 }
